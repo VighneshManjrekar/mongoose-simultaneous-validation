@@ -9,15 +9,17 @@ router.post("/", async (req, res, next) => {
     email,
   });
   const post = new Post({
-    author: user._id,
     title,
   });
 
   try {
     await Promise.all([user.validate(), post.validate()]);
     const userRes = await user.save();
+    post.author = userRes._id;
     const postRes = await post.save();
-    return res.status(200).json({ success: true, user: userRes, post: postRes });
+    return res
+      .status(200)
+      .json({ success: true, user: userRes, post: postRes });
   } catch (err) {
     console.log("isValidErr: ", err);
     return res.status(400).json({ success: false });
